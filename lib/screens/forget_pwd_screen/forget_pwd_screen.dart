@@ -147,6 +147,7 @@ class _ForgetPwdScreenState extends State<ForgetPwdScreen> {
         } else if (!regExp.hasMatch(value)) {
           return 'Please enter a valid email address';
         }
+        return null;
       },
     );
   }

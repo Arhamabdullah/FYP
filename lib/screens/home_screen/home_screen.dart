@@ -119,41 +119,17 @@ class HomeScreen extends StatelessWidget {
                         ),
                         HomeCard(
                           onPress: () {
-                            //go to assignment screen here
-                            Navigator.pushNamed(
-                                context, AssignmentScreen.routeName);
-                          },
-                          icon: 'assets/icons/assignment.svg',
-                          title: 'Upcoming Activities',
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        HomeCard(
-                          onPress: () {
                             Navigator.pushNamedAndRemoveUntil(context,
                                 NotesScreen.routeName, (route) => false);
                           },
                           icon: 'assets/icons/holiday.svg',
                           title: 'Notes',
                         ),
-                        HomeCard(
-                          onPress: () {},
-                          icon: 'assets/icons/timetable.svg',
-                          title: 'Time Table',
-                        ),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        HomeCard(
-                          onPress: () {},
-                          icon: 'assets/icons/result.svg',
-                          title: 'Progress',
-                        ),
                         HomeCard(
                           onPress: () {
                             Navigator.pushNamed(
@@ -161,31 +137,6 @@ class HomeScreen extends StatelessWidget {
                           },
                           icon: 'assets/icons/datesheet.svg',
                           title: 'DateSheet',
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        HomeCard(
-                          onPress: () {},
-                          icon: 'assets/icons/ask.svg',
-                          title: 'Ask',
-                        ),
-                        HomeCard(
-                          onPress: () {},
-                          icon: 'assets/icons/gallery.svg',
-                          title: 'Gallery',
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        HomeCard(
-                          onPress: () {},
-                          icon: 'assets/icons/resume.svg',
-                          title: 'Leave\nApplication',
                         ),
                         HomeCard(
                           onPress: () {},
@@ -197,11 +148,6 @@ class HomeScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        HomeCard(
-                          onPress: () {},
-                          icon: 'assets/icons/event.svg',
-                          title: 'Events',
-                        ),
                         HomeCard(
                           onPress: () {
                             Navigator.pushNamedAndRemoveUntil(context,

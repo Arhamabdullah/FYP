@@ -1,4 +1,8 @@
 import 'package:Edufy/screens/quiz1/quiz_screen.dart';
+import 'package:Edufy/screens/quiz2/quiz_screen.dart';
+import 'package:Edufy/screens/quiz3/quiz_screen.dart';
+import 'package:Edufy/screens/quiz4/quiz_screen.dart';
+import 'package:Edufy/screens/quiz5/quiz_screen.dart';
 
 import '/screens/login_screen/login_screen.dart';
 import '/screens/notes/addNoteScreen.dart';
@@ -25,6 +29,10 @@ Map<String, WidgetBuilder> routes = {
   AssignmentScreen.routeName: (context) => AssignmentScreen(),
   DateSheetScreen.routeName: (context) => DateSheetScreen(),
   QuizScreen.routeName: (context) => QuizScreen(),
+  QuizScreen.routeName: (context) => QuizScreen2(),
+  QuizScreen2.routeName: (context) => QuizScreen3(),
+  QuizScreen3.routeName: (context) => QuizScreen4(),
+  QuizScreen4.routeName: (context) => QuizScreen5(),
   NotesScreen.routeName: (context) => NotesScreen(),
   AddNoteScreen.routeName: (context) => AddNoteScreen(),
   EditNoteScreen.routeName: (context) => EditNoteScreen(),
