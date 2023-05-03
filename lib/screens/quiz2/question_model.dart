@@ -17,11 +17,11 @@ List<Question> getQuestions() {
   //ADD questions and answer here
 
   list.add(Question(
-    "Who is the owner of Flutter?",
+    "Who is the owner of symbian?",
     [
-      Answer("Nokia", false),
+      Answer("Nokia", true),
       Answer("Samsung", false),
-      Answer("Google", true),
+      Answer("Google", false),
       Answer("Apple", false),
     ],
   ));

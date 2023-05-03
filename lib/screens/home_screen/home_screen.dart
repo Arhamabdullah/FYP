@@ -112,7 +112,7 @@ class HomeScreen extends StatelessWidget {
                         HomeCard(
                           onPress: () {
                             Navigator.pushNamedAndRemoveUntil(context,
-                                QuizScreen.routeName, (route) => false);
+                                QuizScreen1.routeName, (route) => false);
                           },
                           icon: 'assets/icons/quiz.svg',
                           title: 'Activity',

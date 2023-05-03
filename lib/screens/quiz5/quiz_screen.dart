@@ -173,7 +173,7 @@ class _QuizScreenState extends State<QuizScreen5> {
         style: TextStyle(color: isPassed ? Colors.green : Colors.redAccent),
       ),
       content: ElevatedButton(
-        child: const Text("Restart"),
+        child: const Text("next quiz"),
         onPressed: () {
           Navigator.pop(context);
           setState(() {

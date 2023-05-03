@@ -19,7 +19,7 @@ List<Question> getQuestions() {
   list.add(Question(
     "Who is the owner of Flutter?",
     [
-      Answer("Nokia", false),
+      Answer("abc", false),
       Answer("Samsung", false),
       Answer("Google", true),
       Answer("Apple", false),

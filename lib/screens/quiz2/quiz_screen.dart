@@ -1,4 +1,5 @@
 import 'package:Edufy/screens/home_screen/home_screen.dart';
+import 'package:Edufy/screens/quiz3/quiz_screen.dart';
 import 'package:flutter/material.dart';
 import '/screens/quiz1/question_model.dart';
 
@@ -173,9 +174,9 @@ class _QuizScreenState extends State<QuizScreen2> {
         style: TextStyle(color: isPassed ? Colors.green : Colors.redAccent),
       ),
       content: ElevatedButton(
-        child: const Text("Restart"),
+        child: const Text("next quiz"),
         onPressed: () {
-          Navigator.pop(context);
+          Navigator.pushNamed(context, QuizScreen3.routeName);
           setState(() {
             currentQuestionIndex = 0;
             score = 0;
