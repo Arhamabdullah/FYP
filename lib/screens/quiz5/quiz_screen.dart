@@ -1,6 +1,6 @@
 import 'package:Edufy/screens/home_screen/home_screen.dart';
+import 'package:Edufy/screens/quiz5/question_model.dart';
 import 'package:flutter/material.dart';
-import '/screens/quiz1/question_model.dart';
 
 class QuizScreen5 extends StatefulWidget {
   const QuizScreen5({super.key});
@@ -11,10 +11,10 @@ class QuizScreen5 extends StatefulWidget {
 
 class _QuizScreenState extends State<QuizScreen5> {
   //define the datas
-  List<Question> questionList = getQuestions();
+  List<Question5> questionList = getQuestions5();
   int currentQuestionIndex = 0;
   int score = 0;
-  Answer? selectedAnswer;
+  Answer5? selectedAnswer;
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +97,7 @@ class _QuizScreenState extends State<QuizScreen5> {
     );
   }
 
-  Widget _answerButton(Answer answer) {
+  Widget _answerButton(Answer5 answer) {
     bool isSelected = answer == selectedAnswer;
 
     return Container(

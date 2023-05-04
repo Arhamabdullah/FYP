@@ -1,7 +1,6 @@
 import 'package:Edufy/screens/quiz1/quiz_screen.dart';
 
 import '/constants.dart';
-import '/screens/assignment_screen/assignment_screen.dart';
 import '/screens/datesheet_screen/datesheet_screen.dart';
 import '/screens/login_screen/login_screen.dart';
 import '/screens/fee_screen/fee_screen.dart';

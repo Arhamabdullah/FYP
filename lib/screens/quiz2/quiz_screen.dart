@@ -1,7 +1,7 @@
 import 'package:Edufy/screens/home_screen/home_screen.dart';
+import 'package:Edufy/screens/quiz2/question_model.dart';
 import 'package:Edufy/screens/quiz3/quiz_screen.dart';
 import 'package:flutter/material.dart';
-import '/screens/quiz1/question_model.dart';
 
 class QuizScreen2 extends StatefulWidget {
   const QuizScreen2({super.key});
@@ -12,10 +12,18 @@ class QuizScreen2 extends StatefulWidget {
 
 class _QuizScreenState extends State<QuizScreen2> {
   //define the datas
-  List<Question> questionList = getQuestions();
+  List<Question2> questionList = getQuestions2();
   int currentQuestionIndex = 0;
   int score = 0;
-  Answer? selectedAnswer;
+  Answer2? selectedAnswer;
+  void nextQuiz() {
+    Navigator.pushReplacementNamed(context, QuizScreen3.routeName);
+    setState(() {
+      currentQuestionIndex = 0;
+      score = 0;
+      selectedAnswer = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +106,7 @@ class _QuizScreenState extends State<QuizScreen2> {
     );
   }
 
-  Widget _answerButton(Answer answer) {
+  Widget _answerButton(Answer2 answer) {
     bool isSelected = answer == selectedAnswer;
 
     return Container(
@@ -176,7 +184,7 @@ class _QuizScreenState extends State<QuizScreen2> {
       content: ElevatedButton(
         child: const Text("next quiz"),
         onPressed: () {
-          Navigator.pushNamed(context, QuizScreen3.routeName);
+          Navigator.pushReplacementNamed(context, QuizScreen3.routeName);
           setState(() {
             currentQuestionIndex = 0;
             score = 0;

@@ -1,7 +1,4 @@
 import 'dart:developer';
-import 'package:get/get.dart';
-import 'package:Edufy/screens/login_screen/login_screen.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 

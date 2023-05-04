@@ -1,56 +1,56 @@
-class Question {
+class Question2 {
   final String questionText;
-  final List<Answer> answersList;
+  final List<Answer2> answersList;
 
-  Question(this.questionText, this.answersList);
+  Question2(this.questionText, this.answersList);
 }
 
-class Answer {
+class Answer2 {
   final String answerText;
   final bool isCorrect;
 
-  Answer(this.answerText, this.isCorrect);
+  Answer2(this.answerText, this.isCorrect);
 }
 
-List<Question> getQuestions() {
-  List<Question> list = [];
+List<Question2> getQuestions2() {
+  List<Question2> list = [];
   //ADD questions and answer here
 
-  list.add(Question(
+  list.add(Question2(
     "Who is the owner of symbian?",
     [
-      Answer("Nokia", true),
-      Answer("Samsung", false),
-      Answer("Google", false),
-      Answer("Apple", false),
+      Answer2("Nokia", true),
+      Answer2("Samsung", false),
+      Answer2("Google", false),
+      Answer2("Apple", false),
     ],
   ));
 
-  list.add(Question(
+  list.add(Question2(
     "Who owns Iphone?",
     [
-      Answer("Apple", true),
-      Answer("Microsoft", false),
-      Answer("Google", false),
-      Answer("Nokia", false),
+      Answer2("Apple", true),
+      Answer2("Microsoft", false),
+      Answer2("Google", false),
+      Answer2("Nokia", false),
     ],
   ));
 
-  list.add(Question(
+  list.add(Question2(
     "Youtube is _________  platform?",
     [
-      Answer("Music Sharing", false),
-      Answer("Video Sharing", false),
-      Answer("Live Streaming", false),
-      Answer("All of the above", true),
+      Answer2("Music Sharing", false),
+      Answer2("Video Sharing", false),
+      Answer2("Live Streaming", false),
+      Answer2("All of the above", true),
     ],
   ));
 
-  list.add(Question(
+  list.add(Question2(
     "Flutter user dart as a language?",
     [
-      Answer("True", true),
-      Answer("False", false),
+      Answer2("True", true),
+      Answer2("False", false),
     ],
   ));
 
