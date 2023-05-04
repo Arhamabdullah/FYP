@@ -6,13 +6,13 @@ import 'widgets/fee_widgets.dart';
 
 class FeeScreen extends StatelessWidget {
   const FeeScreen({Key? key}) : super(key: key);
-  static String routeName = 'FeeScreen';
+  static String routeName = 'results';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Fee'),
+        title: Text('results'),
       ),
       body: Column(
         children: [

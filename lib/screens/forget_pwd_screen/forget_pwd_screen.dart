@@ -1,154 +1,108 @@
-import 'dart:developer';
-
-import '/components/custom_buttons.dart';
-import '/constants.dart';
-import '/screens/home_screen/home_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:sizer/sizer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-late bool _passwordVisible;
-
-class ForgetPwdScreen extends StatefulWidget {
-  static String routeName = 'LoginScreen';
+class ForgotPasswordScreen extends StatefulWidget {
+  static const String routeName = 'forgotPassword';
 
   @override
-  _ForgetPwdScreenState createState() => _ForgetPwdScreenState();
+  _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
 }
 
-class _ForgetPwdScreenState extends State<ForgetPwdScreen> {
-  //validate our form now
+class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
-
-  //changes current state
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _passwordVisible = true;
-  }
-
-  //Controllers - control input values
-  TextEditingController loginEmailController = TextEditingController();
-  TextEditingController loginPasswordController = TextEditingController();
+  final _auth = FirebaseAuth.instance;
+  TextEditingController _emailController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      //when user taps anywhere on the screen, keyboard hides
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Scaffold(
-        body: Column(
-          children: [
-            Container(
-              width: 100.w,
-              height: 35.h,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Hi Student',
-                          style: Theme.of(context).textTheme.subtitle1),
-                      Text('Sign in to continue',
-                          style: Theme.of(context).textTheme.subtitle2),
-                      sizedBox,
-                    ],
-                  ),
-                  Image.asset(
-                    'assets/images/splash.png',
-                    height: 20.h,
-                    width: 40.w,
-                  ),
-                  SizedBox(
-                    height: kDefaultPadding / 2,
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.only(left: 5.w, right: 5.w),
-                decoration: BoxDecoration(
-                  color: kOtherColor,
-                  //reusable radius,
-                  borderRadius: kTopBorderRadius,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Forgot Password'),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                SizedBox(height: 20),
+                Text(
+                  'Enter your email address below and we will send you a link to reset your password.',
+                  style: TextStyle(fontSize: 18),
                 ),
-                child: Form(
-                  key: _formKey,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        sizedBox,
-                        buildEmailField(),
-                        sizedBox,
-                        DefaultButton(
-                          onPress: () async {
-                            // if (_formKey.currentState!.validate()) {
-                            //   Navigator.pushNamedAndRemoveUntil(context,
-                            //       HomeScreen.routeName, (route) => false);
-                            // }
-                            var loginEmail = loginEmailController.text.trim();
-                            var loginPassword =
-                                loginPasswordController.text.trim();
-
-                            try {
-                              final User? firebaseUser = (await FirebaseAuth
-                                      .instance
-                                      .signInWithEmailAndPassword(
-                                          email: loginEmail,
-                                          password: loginPassword))
-                                  .user;
-                              if (firebaseUser != null) {
-                                Navigator.pushNamedAndRemoveUntil(context,
-                                    HomeScreen.routeName, (route) => false);
-                              } else {
-                                log("Please Enter valid Email and Password!");
-                              }
-                            } on FirebaseAuthException catch (e) {
-                              log("Error $e");
-                            }
+                SizedBox(height: 30),
+                TextFormField(
+                  controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
+                  decoration: InputDecoration(
+                    labelText: 'Email address',
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Please enter your email address';
+                    }
+                    if (!value.contains('@') || !value.contains('.')) {
+                      return 'Please enter a valid email address';
+                    }
+                    return null;
+                  },
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _auth
+                          .sendPasswordResetEmail(email: _emailController.text)
+                          .then((value) {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('Reset Password'),
+                              content: Text(
+                                  'A password reset email has been sent to ${_emailController.text}. Please check your inbox and follow the instructions to reset your password.'),
+                              actions: <Widget>[
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            );
                           },
-                          title: 'FORGOT PASSWORD',
-                          iconData: Icons.arrow_forward_outlined,
-                        ),
-                        sizedBox,
-                      ],
-                    ),
-                  ),
+                        );
+                      }).catchError((error) {
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('Error'),
+                              content: Text(error.message),
+                              actions: <Widget>[
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      });
+                    }
+                  },
+                  child: Text('Submit'),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
-    );
-  }
-
-  TextFormField buildEmailField() {
-    return TextFormField(
-      controller: loginEmailController,
-      textAlign: TextAlign.start,
-      keyboardType: TextInputType.emailAddress,
-      style: kInputTextStyle,
-      decoration: InputDecoration(
-        labelText: 'Email',
-        floatingLabelBehavior: FloatingLabelBehavior.always,
-      ),
-      validator: (value) {
-        //for validation
-        RegExp regExp = new RegExp(emailPattern);
-        if (value == null || value.isEmpty) {
-          return 'Please enter some text';
-          //if it does not matches the pattern, like
-          //it not contains @
-        } else if (!regExp.hasMatch(value)) {
-          return 'Please enter a valid email address';
-        }
-        return null;
-      },
     );
   }
 }

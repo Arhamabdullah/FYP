@@ -1,8 +1,7 @@
 import 'dart:developer';
-
+import 'package:Edufy/screens/forget_pwd_screen/forget_pwd_screen.dart';
 import '/components/custom_buttons.dart';
 import '/constants.dart';
-import '/screens/forget_pwd_screen/forget_pwd_screen.dart';
 import '/screens/home_screen/home_screen.dart';
 import '/screens/register_screen/register_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -137,8 +136,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         // ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushNamedAndRemoveUntil(context,
-                                ForgetPwdScreen.routeName, (route) => true);
+                            Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                ForgotPasswordScreen.routeName,
+                                (route) => true);
                           },
                           child: Text(
                             'Forgot Password',
