@@ -1,6 +1,3 @@
-import 'package:Edufy/constants.dart';
-import 'package:get/get.dart';
-
 import '/screens/notes/addNoteScreen.dart';
 import '/screens/notes/editNoteScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
