@@ -1,3 +1,4 @@
+import 'package:Edufy/screens/forget_pwd_screen/forget_pwd_screen.dart';
 import 'package:Edufy/screens/quiz1/quiz_screen.dart';
 import 'package:Edufy/screens/quiz2/quiz_screen.dart';
 import 'package:Edufy/screens/quiz3/quiz_screen.dart';
@@ -36,4 +37,5 @@ Map<String, WidgetBuilder> routes = {
   NotesScreen.routeName: (context) => NotesScreen(),
   AddNoteScreen.routeName: (context) => AddNoteScreen(),
   EditNoteScreen.routeName: (context) => EditNoteScreen(),
+  ForgotPasswordScreen.routeName: (context) => ForgotPasswordScreen(),
 };
