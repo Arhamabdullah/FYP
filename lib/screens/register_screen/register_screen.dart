@@ -37,7 +37,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController phoneController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
+  TextEditingController fatherFirstNameController = TextEditingController();
+  TextEditingController fatherLastNameController = TextEditingController();
+  TextEditingController motherFirstNameController = TextEditingController();
+  TextEditingController motherLastNameController = TextEditingController();
+  TextEditingController genderController = TextEditingController();
   User? currentuser = FirebaseAuth.instance.currentUser;
 
   @override
@@ -98,6 +102,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         sizedBox,
                         buildPasswordField(),
                         sizedBox,
+                        buildFatherFirstNameField(),
+                        sizedBox,
+                        buildFatherLastNameField(),
+                        sizedBox,
+                        buildMotherFirstNameField(),
+                        sizedBox,
+                        buildMotherLastNameField(),
+                        sizedBox,
+                        buildGenderField(),
+                        sizedBox,
                         DefaultButton(
                           onPress: () async {
                             // if (_formKey.currentState!.validate()) {
@@ -108,12 +122,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             var phone = phoneController.text.trim();
                             var email = emailController.text.trim();
                             var password = passwordController.text.trim();
+                            var fatherFirstName =
+                                fatherFirstNameController.text.trim();
+                            var fatherLastName =
+                                fatherLastNameController.text.trim();
+                            var motherFirstName =
+                                motherFirstNameController.text.trim();
+                            var motherLastName =
+                                motherLastNameController.text.trim();
+                            var gender = genderController.text.trim();
 
                             await FirebaseAuth.instance
                                 .createUserWithEmailAndPassword(
                                     email: email, password: password)
                                 .then((value) => {
-                                      signUpUser(name, phone, email, password),
+                                      signUpUser(
+                                        name,
+                                        phone,
+                                        email,
+                                        password,
+                                        gender,
+                                        fatherFirstName,
+                                        fatherLastName,
+                                        motherFirstName,
+                                        motherLastName,
+                                      ),
                                       Navigator.pushNamedAndRemoveUntil(
                                           context,
                                           LoginScreen.routeName,
@@ -274,6 +307,101 @@ class _RegisterScreenState extends State<RegisterScreen> {
         if (value!.length < 5) {
           return 'Must be more than 5 characters';
         }
+      },
+    );
+  }
+
+  TextFormField buildFatherFirstNameField() {
+    return TextFormField(
+      controller: fatherFirstNameController,
+      textAlign: TextAlign.start,
+      keyboardType: TextInputType.name,
+      style: kInputTextStyle,
+      decoration: InputDecoration(
+        labelText: 'Father\'s First Name',
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter some text';
+        }
+        return null;
+      },
+    );
+  }
+
+  TextFormField buildFatherLastNameField() {
+    return TextFormField(
+      controller: fatherLastNameController,
+      textAlign: TextAlign.start,
+      keyboardType: TextInputType.name,
+      style: kInputTextStyle,
+      decoration: InputDecoration(
+        labelText: 'Father\'s Last Name',
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter some text';
+        }
+        return null;
+      },
+    );
+  }
+
+  TextFormField buildMotherFirstNameField() {
+    return TextFormField(
+      controller: motherFirstNameController,
+      textAlign: TextAlign.start,
+      keyboardType: TextInputType.name,
+      style: kInputTextStyle,
+      decoration: InputDecoration(
+        labelText: 'Mother\'s First Name',
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter some text';
+        }
+        return null;
+      },
+    );
+  }
+
+  TextFormField buildMotherLastNameField() {
+    return TextFormField(
+      controller: motherLastNameController,
+      textAlign: TextAlign.start,
+      keyboardType: TextInputType.name,
+      style: kInputTextStyle,
+      decoration: InputDecoration(
+        labelText: 'Mother\'s Last Name',
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter some text';
+        }
+        return null;
+      },
+    );
+  }
+
+  TextFormField buildGenderField() {
+    return TextFormField(
+      controller: genderController,
+      textAlign: TextAlign.start,
+      keyboardType: TextInputType.name,
+      style: kInputTextStyle,
+      decoration: InputDecoration(
+        labelText: 'Gender',
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter some text';
+        }
+        return null;
       },
     );
   }
