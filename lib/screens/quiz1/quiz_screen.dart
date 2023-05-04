@@ -2,6 +2,7 @@ import 'package:Edufy/screens/home_screen/home_screen.dart';
 import 'package:Edufy/screens/quiz2/quiz_screen.dart';
 import 'package:flutter/material.dart';
 import '/screens/quiz1/question_model.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class QuizScreen1 extends StatefulWidget {
   const QuizScreen1({super.key});
