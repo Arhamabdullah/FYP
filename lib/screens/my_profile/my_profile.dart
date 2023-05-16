@@ -1,21 +1,45 @@
 import '/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class MyProfileScreen extends StatelessWidget {
+class MyProfileScreen extends StatefulWidget {
   const MyProfileScreen({Key? key}) : super(key: key);
   static String routeName = 'MyProfileScreen';
 
   @override
+  _MyProfileScreenState createState() => _MyProfileScreenState();
+}
+
+class _MyProfileScreenState extends State<MyProfileScreen> {
+  final _auth = FirebaseAuth.instance;
+  late String _userId;
+  late Stream<DocumentSnapshot<Map<String, dynamic>>> _userStream;
+
+  @override
+  void initState() {
+    super.initState();
+    _userId = _auth.currentUser!.uid;
+    _userStream =
+        FirebaseFirestore.instance.collection('users').doc(_userId).snapshots();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //app bar theme for tablet
       appBar: AppBar(
         title: Text('My Profile'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
         actions: [
           InkWell(
             onTap: () {
-              //send report to school management, in case if you want some changes to your profile
+              // Send report to school management, in case if you want some changes to your profile
             },
             child: Container(
               padding: EdgeInsets.only(right: kDefaultPadding / 2),
@@ -35,83 +59,102 @@ class MyProfileScreen extends StatelessWidget {
       ),
       body: Container(
         color: kOtherColor,
-        child: Column(
-          children: [
-            Container(
-              width: 100.w,
-              height: SizerUtil.deviceType == DeviceType.tablet ? 19.h : 15.h,
-              decoration: BoxDecoration(
-                color: kPrimaryColor,
-                borderRadius: kBottomBorderRadius,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+        child: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+          stream: _userStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              final userData = snapshot.data!.data();
+              final String gender = userData?['gender'] ?? '';
+              return Column(
                 children: [
-                  CircleAvatar(
-                    radius:
-                        SizerUtil.deviceType == DeviceType.tablet ? 12.w : 13.w,
-                    backgroundColor: kSecondaryColor,
-                    backgroundImage:
-                        AssetImage('assets/images/student_profile.jpeg'),
+                  Container(
+                    width: 100.w,
+                    height:
+                        SizerUtil.deviceType == DeviceType.tablet ? 19.h : 15.h,
+                    decoration: BoxDecoration(
+                      color: kPrimaryColor,
+                      borderRadius: kBottomBorderRadius,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: SizerUtil.deviceType == DeviceType.tablet
+                              ? 12.w
+                              : 13.w,
+                          backgroundColor: kSecondaryColor,
+                          backgroundImage: AssetImage(getProfileImage(gender)),
+                        ),
+                        kWidthSizedBox,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              userData?['name'] ?? '',
+                              style: Theme.of(context).textTheme.subtitle1,
+                            ),
+                            Text(
+                              'Class ${userData?['admissionClass'] ?? ''} | Reg no: 0001',
+                              style: Theme.of(context).textTheme.subtitle2,
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
                   ),
-                  kWidthSizedBox,
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                  sizedBox,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      Text(
-                        'Rabia Memon',
-                        style: Theme.of(context).textTheme.subtitle1,
+                      ProfileDetailRow(
+                        title: 'Admission Class',
+                        value: userData?['admissionClass'] ?? '',
                       ),
-                      Text('Class II  | Reg no: xyz',
-                          style: Theme.of(context).textTheme.subtitle2),
+                      ProfileDetailRow(
+                        title: 'Admission Number',
+                        value: userData?['admissionNumber'] ?? '',
+                      ),
                     ],
-                  )
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      ProfileDetailRow(
+                        title: 'Date of Birth',
+                        value: userData?['dateOfBirth'] ?? '',
+                      ),
+                    ],
+                  ),
+                  sizedBox,
+                  ProfileDetailColumn(
+                    title: 'Email',
+                    value: userData?['email'] ?? '',
+                  ),
+                  ProfileDetailColumn(
+                    title: 'Father Name',
+                    value: userData?['fatherFirstName'] ?? '',
+                  ),
+                  ProfileDetailColumn(
+                    title: 'Mother Name',
+                    value: userData?['motherFirstName'] ?? '',
+                  ),
+                  ProfileDetailColumn(
+                    title: 'Phone Number',
+                    value: userData?['phone'] ?? '',
+                  ),
                 ],
-              ),
-            ),
-            sizedBox,
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ProfileDetailRow(
-                    title: 'Registration Number', value: '2022-ASDF-2022'),
-                ProfileDetailRow(title: 'Academic Year', value: '2022-2022'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ProfileDetailRow(title: 'Admission Class', value: 'II'),
-                ProfileDetailRow(title: 'Admission Number', value: '000126'),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ProfileDetailRow(
-                    title: 'Date of Admission', value: '1 Aug, 2022'),
-                ProfileDetailRow(title: 'Date of Birth', value: '23 nov 2000'),
-              ],
-            ),
-            sizedBox,
-            ProfileDetailColumn(
-              title: 'Email',
-              value: 'rabia12@gmail.com',
-            ),
-            ProfileDetailColumn(
-              title: 'Father Name',
-              value: 'shoukat ali',
-            ),
-            ProfileDetailColumn(
-              title: 'Mother Name',
-              value: 'shabana',
-            ),
-            ProfileDetailColumn(
-              title: 'Phone Number',
-              value: '+923066666666',
-            ),
-          ],
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('Error: ${snapshot.error}'),
+              );
+            } else {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+          },
         ),
       ),
     );
@@ -123,6 +166,7 @@ class ProfileDetailRow extends StatelessWidget {
       : super(key: key);
   final String title;
   final String value;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -170,6 +214,7 @@ class ProfileDetailColumn extends StatelessWidget {
       : super(key: key);
   final String title;
   final String value;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -207,5 +252,15 @@ class ProfileDetailColumn extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+String getProfileImage(String gender) {
+  if (gender == 'male') {
+    return 'assets/images/student_profile_male.jpeg';
+  } else if (gender == 'female') {
+    return 'assets/images/student_profile_female.png';
+  } else {
+    return 'assets/images/student_profile.png'; // Default image if gender is not specified or
   }
 }

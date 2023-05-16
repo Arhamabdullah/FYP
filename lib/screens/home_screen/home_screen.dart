@@ -1,5 +1,4 @@
 import 'package:Edufy/screens/quiz1/quiz_screen.dart';
-
 import '/constants.dart';
 import '/screens/datesheet_screen/datesheet_screen.dart';
 import '/screens/login_screen/login_screen.dart';
@@ -7,6 +6,7 @@ import '/screens/fee_screen/fee_screen.dart';
 import '/screens/my_profile/my_profile.dart';
 import '/screens/notes/notes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sizer/sizer.dart';
@@ -18,12 +18,14 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final _auth = FirebaseAuth.instance; // Initialize FirebaseAuth instance
+
     return Scaffold(
       appBar: AppBar(
         actions: [
           GestureDetector(
             onTap: () {
-              FirebaseAuth.instance.signOut();
+              _auth.signOut(); // Use _auth to sign out
               Navigator.pushNamedAndRemoveUntil(
                   context, LoginScreen.routeName, (route) => false);
             },
@@ -58,13 +60,34 @@ class HomeScreen extends StatelessWidget {
                       ],
                     ),
                     kHalfSizedBox,
-                    StudentPicture(
-                        picAddress: 'assets/images/student_profile.jpeg',
-                        onPress: () {
-                          // go to profile detail screen here
-                          Navigator.pushNamed(
-                              context, MyProfileScreen.routeName);
-                        }),
+                    StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                      stream: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(_auth.currentUser!.uid)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          final userData = snapshot.data!.data();
+                          final String gender = userData?['gender'] ?? '';
+                          final String picAddress = getProfileImage(gender);
+                          return StudentPicture(
+                            picAddress: picAddress,
+                            onPress: () {
+                              Navigator.pushNamed(
+                                  context, MyProfileScreen.routeName);
+                            },
+                          );
+                        } else {
+                          return StudentPicture(
+                            picAddress: 'assets/images/student_profile.png',
+                            onPress: () {
+                              Navigator.pushNamed(
+                                  context, MyProfileScreen.routeName);
+                            },
+                          );
+                        }
+                      },
+                    ),
                   ],
                 ),
                 sizedBox,
@@ -91,8 +114,6 @@ class HomeScreen extends StatelessWidget {
               ],
             ),
           ),
-
-          //other will use all the remaining height of screen
           Expanded(
             child: Container(
               width: 100.w,
@@ -101,7 +122,7 @@ class HomeScreen extends StatelessWidget {
                 borderRadius: kTopBorderRadius,
               ),
               child: SingleChildScrollView(
-                //for padding
+//for padding
                 physics: BouncingScrollPhysics(),
                 child: Column(
                   children: [

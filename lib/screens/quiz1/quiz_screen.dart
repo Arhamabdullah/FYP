@@ -1,22 +1,36 @@
 import 'package:Edufy/screens/home_screen/home_screen.dart';
+import 'package:Edufy/screens/quiz1/question_model.dart';
 import 'package:Edufy/screens/quiz2/quiz_screen.dart';
+import 'package:Edufy/screens/quiz3/question_model.dart';
+import 'package:Edufy/screens/quiz4/quiz_screen.dart';
 import 'package:flutter/material.dart';
-import '/screens/quiz1/question_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class QuizScreen1 extends StatefulWidget {
-  const QuizScreen1({super.key});
+  const QuizScreen1({Key? key}) : super(key: key);
   static const String routeName = 'QuizScreen1';
+
   @override
-  State<QuizScreen1> createState() => _QuizScreenState();
+  _QuizScreenState createState() => _QuizScreenState();
 }
 
 class _QuizScreenState extends State<QuizScreen1> {
-  //define the datas
   List<Question> questionList = getQuestions();
   int currentQuestionIndex = 0;
   int score = 0;
   Answer? selectedAnswer;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  void nextQuiz() {
+    Navigator.pushReplacementNamed(context, QuizScreen4.routeName);
+    setState(() {
+      currentQuestionIndex = 0;
+      score = 0;
+      selectedAnswer = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,29 +45,31 @@ class _QuizScreenState extends State<QuizScreen1> {
             child: Icon(Icons.logout),
           )
         ],
-        title: Text('back to home'),
+        title: Text('Back to Home'),
       ),
       backgroundColor: const Color.fromARGB(255, 5, 50, 80),
       body: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-        child:
-            Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-          const Text(
-            "Simple Quiz App",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            const Text(
+              "Simple Quiz App",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+              ),
             ),
-          ),
-          _questionWidget(),
-          _answerList(),
-          _nextButton(),
-        ]),
+            _questionWidget(),
+            _answerList(),
+            _nextButton(),
+          ],
+        ),
       ),
     );
   }
 
-  _questionWidget() {
+  Widget _questionWidget() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -83,18 +99,16 @@ class _QuizScreenState extends State<QuizScreen1> {
               fontWeight: FontWeight.w600,
             ),
           ),
-        )
+        ),
       ],
     );
   }
 
-  _answerList() {
+  Widget _answerList() {
     return Column(
       children: questionList[currentQuestionIndex]
           .answersList
-          .map(
-            (e) => _answerButton(e),
-          )
+          .map((e) => _answerButton(e))
           .toList(),
     );
   }
@@ -127,11 +141,8 @@ class _QuizScreenState extends State<QuizScreen1> {
     );
   }
 
-  _nextButton() {
-    bool isLastQuestion = false;
-    if (currentQuestionIndex == questionList.length - 1) {
-      isLastQuestion = true;
-    }
+  Widget _nextButton() {
+    bool isLastQuestion = currentQuestionIndex == questionList.length - 1;
 
     return Container(
       width: MediaQuery.of(context).size.width * 0.5,
@@ -145,11 +156,8 @@ class _QuizScreenState extends State<QuizScreen1> {
         ),
         onPressed: () {
           if (isLastQuestion) {
-            //display score
-
             showDialog(context: context, builder: (_) => _showScoreDialog());
           } else {
-            //next question
             setState(() {
               selectedAnswer = null;
               currentQuestionIndex++;
@@ -160,23 +168,37 @@ class _QuizScreenState extends State<QuizScreen1> {
     );
   }
 
-  _showScoreDialog() {
-    bool isPassed = false;
+  Future<void> _saveQuizResult(double scorePercentage) async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final userId = user.uid;
+        final quizResultRef = _firestore.collection('quizResults').doc(userId);
+        await quizResultRef.set({'percentage': scorePercentage});
+      }
+    } catch (error) {
+      print('Error saving quiz result: $error');
+    }
+  }
 
-    if (score >= questionList.length * 0.6) {
-      //pass if 60 %
+  Widget _showScoreDialog() {
+    bool isPassed = false;
+    double scorePercentage = (score / questionList.length) * 100;
+
+    if (scorePercentage >= 60) {
       isPassed = true;
     }
-    String title = isPassed ? "Passed " : "Failed";
+    String title = isPassed ? "Passed" : "Failed";
 
     return AlertDialog(
       title: Text(
-        title + " | Score is $score",
+        '$title | Score: $scorePercentage%',
         style: TextStyle(color: isPassed ? Colors.green : Colors.redAccent),
       ),
       content: ElevatedButton(
-        child: const Text("next quiz"),
+        child: const Text("Next Quiz"),
         onPressed: () {
+          _saveQuizResult(scorePercentage);
           Navigator.pushReplacementNamed(context, QuizScreen2.routeName);
           setState(() {
             currentQuestionIndex = 0;

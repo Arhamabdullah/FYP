@@ -2,6 +2,8 @@
 
 import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '/components/custom_buttons.dart';
 import '/constants.dart';
 import '/screens/login_screen/login_screen.dart';
@@ -42,6 +44,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
   TextEditingController motherFirstNameController = TextEditingController();
   TextEditingController motherLastNameController = TextEditingController();
   TextEditingController genderController = TextEditingController();
+  TextEditingController admissionClassController = TextEditingController();
+  TextEditingController dateOfBirthController = TextEditingController();
   User? currentuser = FirebaseAuth.instance.currentUser;
 
   @override
@@ -112,12 +116,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         sizedBox,
                         buildGenderField(),
                         sizedBox,
+                        buildAdmissionClassField(),
+                        sizedBox,
+                        buildDateOfBirthField(),
+                        sizedBox,
                         DefaultButton(
                           onPress: () async {
-                            // if (_formKey.currentState!.validate()) {
-                            //   Navigator.pushNamedAndRemoveUntil(context,
-                            //       HomeScreen.routeName, (route) => false);
-                            // }
                             var name = nameController.text.trim();
                             var phone = phoneController.text.trim();
                             var email = emailController.text.trim();
@@ -131,28 +135,49 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             var motherLastName =
                                 motherLastNameController.text.trim();
                             var gender = genderController.text.trim();
+                            var AdmissionClass =
+                                admissionClassController.text.trim();
+                            var DateOfBirth = dateOfBirthController.text.trim();
 
-                            await FirebaseAuth.instance
-                                .createUserWithEmailAndPassword(
-                                    email: email, password: password)
-                                .then((value) => {
-                                      signUpUser(
-                                        name,
-                                        phone,
-                                        email,
-                                        password,
-                                        gender,
-                                        fatherFirstName,
-                                        fatherLastName,
-                                        motherFirstName,
-                                        motherLastName,
-                                      ),
-                                      Navigator.pushNamedAndRemoveUntil(
-                                          context,
-                                          LoginScreen.routeName,
-                                          (route) => false),
-                                      log("Account Created Successfully!"),
-                                    });
+                            try {
+                              await FirebaseAuth.instance
+                                  .createUserWithEmailAndPassword(
+                                email: email,
+                                password: password,
+                              );
+
+                              final user = FirebaseAuth.instance.currentUser;
+                              if (user != null) {
+                                final userData = {
+                                  'name': name,
+                                  'phone': phone,
+                                  'email': email,
+                                  'gender': gender,
+                                  'fatherFirstName': fatherFirstName,
+                                  'fatherLastName': fatherLastName,
+                                  'motherFirstName': motherFirstName,
+                                  'motherLastName': motherLastName,
+                                  'admissionClass': AdmissionClass,
+                                  'dateOfBirth':
+                                      DateOfBirth, // Use the text value, not the controller object
+                                };
+
+                                await FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(user.uid)
+                                    .set(userData);
+
+                                log("Account Created Successfully!");
+                                Navigator.pushNamedAndRemoveUntil(
+                                  context,
+                                  LoginScreen.routeName,
+                                  (route) => false,
+                                );
+                              }
+                            } catch (e) {
+                              // Handle any errors that occur during data saving
+                              print('Error saving user data: $e');
+                            }
                           },
                           title: 'REGISTER',
                           iconData: Icons.arrow_forward_outlined,
@@ -395,6 +420,44 @@ class _RegisterScreenState extends State<RegisterScreen> {
       style: kInputTextStyle,
       decoration: InputDecoration(
         labelText: 'Gender',
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter some text';
+        }
+        return null;
+      },
+    );
+  }
+
+  TextFormField buildAdmissionClassField() {
+    return TextFormField(
+      controller: admissionClassController,
+      textAlign: TextAlign.start,
+      keyboardType: TextInputType.text,
+      style: kInputTextStyle,
+      decoration: InputDecoration(
+        labelText: 'Admission Class',
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+      ),
+      validator: (value) {
+        if (value == null || value.isEmpty) {
+          return 'Please enter some text';
+        }
+        return null;
+      },
+    );
+  }
+
+  TextFormField buildDateOfBirthField() {
+    return TextFormField(
+      controller: dateOfBirthController,
+      textAlign: TextAlign.start,
+      keyboardType: TextInputType.datetime,
+      style: kInputTextStyle,
+      decoration: InputDecoration(
+        labelText: 'Date of Birth',
         floatingLabelBehavior: FloatingLabelBehavior.always,
       ),
       validator: (value) {
