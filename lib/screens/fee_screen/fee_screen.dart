@@ -51,7 +51,8 @@ class FeeScreen extends StatelessWidget {
                     onPress: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => PaymentDetailsScreen()),
+                        MaterialPageRoute(
+                            builder: (context) => PaymentDetailsScreen()),
                       );
                     },
                     textColor: Colors.white,
@@ -111,5 +112,3 @@ class FeeButton extends StatelessWidget {
     );
   }
 }
-
-

@@ -194,14 +194,6 @@ class HomeScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         HomeCard(
-                          onPress: () {
-                            Navigator.pushNamed(
-                                context, DateSheetScreen.routeName);
-                          },
-                          icon: 'assets/icons/datesheet.svg',
-                          title: 'DateSheet',
-                        ),
-                        HomeCard(
                           onPress: () {},
                           icon: 'assets/icons/lock.svg',
                           title: 'Change\nPassword',
