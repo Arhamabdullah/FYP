@@ -112,15 +112,6 @@ class _MyProfileScreenState extends State<MyProfileScreen> {
                         value: userData?['admissionClass'] ?? '',
                       ),
                       ProfileDetailRow(
-                        title: 'Admission Number',
-                        value: userData?['admissionNumber'] ?? '',
-                      ),
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      ProfileDetailRow(
                         title: 'Date of Birth',
                         value: userData?['dateOfBirth'] ?? '',
                       ),

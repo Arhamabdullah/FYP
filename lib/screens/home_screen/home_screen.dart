@@ -35,8 +35,7 @@ class HomeScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          //we will divide the screen into two parts
-          //fixed height for first half
+          // First Half of the Screen
           Container(
             width: 100.w,
             height: 40.h,
@@ -48,17 +47,48 @@ class HomeScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
                     Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        StudentName(
-                          studentName: 'Student',
-                        ),
-                        kHalfSizedBox,
-                        StudentClass(studentClass: 'Class II A | Reg no: xyz'),
-                        kHalfSizedBox,
-                        StudentYear(studentYear: '2022-2022'),
-                      ],
-                    ),
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                            stream: FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(_auth.currentUser!.uid)
+                                .snapshots(),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                final userData = snapshot.data!.data();
+                                final String admissionClass =
+                                    userData?['admission_class'] ?? 'N/A';
+                                return Column(
+                                  children: [
+                                    StudentName(
+                                      studentName: 'Student',
+                                    ),
+                                    kHalfSizedBox,
+                                    StudentClass(
+                                        studentClass: 'Class $admissionClass'),
+                                    kHalfSizedBox,
+                                    StudentYear(studentYear: '2023'),
+                                  ],
+                                );
+                              } else {
+                                return Column(
+                                  children: [
+                                    StudentName(
+                                      studentName: 'Student',
+                                    ),
+                                    kHalfSizedBox,
+                                    StudentClass(
+                                        studentClass:
+                                            'Class N/A | Reg no: N/A'),
+                                    kHalfSizedBox,
+                                    StudentYear(studentYear: '2023'),
+                                  ],
+                                );
+                              }
+                            },
+                          ),
+                        ]),
                     kHalfSizedBox,
                     StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
                       stream: FirebaseFirestore.instance
@@ -94,26 +124,40 @@ class HomeScreen extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    StudentDataCard(
-                      onPress: () {
-                        //go to attendance screen
+                    StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+                      stream: FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(_auth.currentUser!.uid)
+                          .snapshots(),
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          final userData = snapshot.data!.data();
+                          final int coins = userData?['coins'] ?? 0;
+                          return StudentDataCard(
+                            onPress: () {
+                              Navigator.pushNamed(context, FeeScreen.routeName);
+                            },
+                            title: 'Coins',
+                            value: coins.toString(),
+                          );
+                        } else {
+                          return StudentDataCard(
+                            onPress: () {
+                              Navigator.pushNamed(context, FeeScreen.routeName);
+                            },
+                            title: 'Coins',
+                            value: 'N/A',
+                          );
+                        }
                       },
-                      title: 'Attendance',
-                      value: '90.02%',
-                    ),
-                    StudentDataCard(
-                      onPress: () {
-                        //go to fee due screen
-                        Navigator.pushNamed(context, FeeScreen.routeName);
-                      },
-                      title: 'coins',
-                      value: '600',
                     ),
                   ],
                 )
               ],
             ),
           ),
+
+          // Second Half of the Screen
           Expanded(
             child: Container(
               width: 100.w,
@@ -122,7 +166,6 @@ class HomeScreen extends StatelessWidget {
                 borderRadius: kTopBorderRadius,
               ),
               child: SingleChildScrollView(
-//for padding
                 physics: BouncingScrollPhysics(),
                 child: Column(
                   children: [
@@ -190,15 +233,16 @@ class HomeScreen extends StatelessWidget {
 }
 
 class HomeCard extends StatelessWidget {
-  const HomeCard(
-      {Key? key,
-      required this.onPress,
-      required this.icon,
-      required this.title})
-      : super(key: key);
+  const HomeCard({
+    Key? key,
+    required this.onPress,
+    required this.icon,
+    required this.title,
+  }) : super(key: key);
   final VoidCallback onPress;
   final String icon;
   final String title;
+
   @override
   Widget build(BuildContext context) {
     return InkWell(

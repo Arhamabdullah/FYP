@@ -181,6 +181,22 @@ class _QuizScreenState extends State<QuizScreen1> {
     }
   }
 
+  Future<void> _awardCoins() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final userId = user.uid;
+        final userRef = _firestore.collection('users').doc(userId);
+        final userData = await userRef.get();
+        final currentCoins = userData.data()?['coins'] ?? 0;
+        final newCoins = currentCoins + 10;
+        await userRef.update({'coins': newCoins});
+      }
+    } catch (error) {
+      print('Error awarding coins: $error');
+    }
+  }
+
   Widget _showScoreDialog() {
     bool isPassed = false;
     double scorePercentage = (score / questionList.length) * 100;
@@ -196,10 +212,12 @@ class _QuizScreenState extends State<QuizScreen1> {
         style: TextStyle(color: isPassed ? Colors.green : Colors.redAccent),
       ),
       content: ElevatedButton(
-        child: const Text("Next Quiz"),
+        child: const Text("Home"),
         onPressed: () {
           _saveQuizResult(scorePercentage);
-          Navigator.pushReplacementNamed(context, QuizScreen2.routeName);
+          _awardCoins();
+          Navigator.pushNamedAndRemoveUntil(
+              context, HomeScreen.routeName, (route) => false);
           setState(() {
             currentQuestionIndex = 0;
             score = 0;

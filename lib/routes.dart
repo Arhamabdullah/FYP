@@ -1,3 +1,5 @@
+import 'package:Edufy/screens/PaymentDetailsScreen/PaymentDetailsScreen.dart';
+import 'package:Edufy/screens/PaymentDetailsScreen/PaymentSuccessScreen.dart';
 import 'package:Edufy/screens/forget_pwd_screen/forget_pwd_screen.dart';
 import 'package:Edufy/screens/quiz1/quiz_screen.dart';
 import 'package:Edufy/screens/quiz2/quiz_screen.dart';
@@ -31,6 +33,7 @@ Map<String, WidgetBuilder> routes = {
   DateSheetScreen.routeName: (context) => DateSheetScreen(),
   QuizScreen1.routeName: (context) => QuizScreen1(),
   QuizScreen2.routeName: (context) => QuizScreen2(),
+  // ignore: equal_keys_in_map
   QuizScreen3.routeName: (context) => QuizScreen3(),
   QuizScreen4.routeName: (context) => QuizScreen4(),
   QuizScreen5.routeName: (context) => QuizScreen5(),
@@ -38,4 +41,6 @@ Map<String, WidgetBuilder> routes = {
   AddNoteScreen.routeName: (context) => AddNoteScreen(),
   EditNoteScreen.routeName: (context) => EditNoteScreen(),
   ForgotPasswordScreen.routeName: (context) => ForgotPasswordScreen(),
+  PaymentDetailsScreen.routeName: (context) => PaymentDetailsScreen(),
+  PaymentSuccessScreen.routeName: (context) => PaymentSuccessScreen(),
 };
