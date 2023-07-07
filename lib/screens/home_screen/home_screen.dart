@@ -1,4 +1,7 @@
 import 'package:Edufy/screens/quiz1/quiz_screen.dart';
+import 'package:Edufy/screens/quiz2/quiz_screen.dart';
+import 'package:Edufy/screens/quiz4/quiz_screen.dart';
+import 'package:Edufy/screens/quiz3/quiz_screen.dart';
 import '/constants.dart';
 import '/screens/datesheet_screen/datesheet_screen.dart';
 import '/screens/login_screen/login_screen.dart';
@@ -11,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sizer/sizer.dart';
 import 'widgets/student_data.dart';
+import 'globals.dart' as globals;
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -172,13 +176,54 @@ class HomeScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        HomeCard(
-                          onPress: () {
-                            Navigator.pushNamedAndRemoveUntil(context,
-                                QuizScreen1.routeName, (route) => false);
+                        ValueListenableBuilder<bool>(
+                          valueListenable: globals.isDisabled,
+                          builder: (context, isDisabled, child) {
+                            return ValueListenableBuilder<int>(
+                              valueListenable: globals.timer,
+                              builder: (context, timer, child) {
+                                return ValueListenableBuilder<int>(
+                                  valueListenable: globals.quizDone,
+                                  builder: (context, quizDoneValue, child) {
+                                    String nextQuizRoute;
+                                    print("Activity done");
+                                    print(quizDoneValue);
+                                    switch (quizDoneValue) {
+                                      case 0:
+                                        nextQuizRoute = QuizScreen1.routeName;
+                                        break;
+                                      case 1:
+                                        nextQuizRoute = QuizScreen2.routeName;
+                                        break;
+                                      case 2:
+                                        nextQuizRoute = QuizScreen3.routeName;
+                                        break;
+                                      case 3:
+                                        nextQuizRoute = QuizScreen4.routeName;
+                                        break;
+                                      default:
+                                        nextQuizRoute = HomeScreen.routeName;
+                                    }
+                                    return HomeCard(
+                                      onPress: () {
+                                        if (!isDisabled) {
+                                          Navigator.pushNamedAndRemoveUntil(
+                                              context,
+                                              nextQuizRoute,
+                                              (route) => false);
+                                        }
+                                      },
+                                      icon: 'assets/icons/quiz.svg',
+                                      title: !isDisabled
+                                          ? 'Activity'
+                                          : 'Content Not Available for ' +
+                                              timer.toString(),
+                                    );
+                                  },
+                                );
+                              },
+                            );
                           },
-                          icon: 'assets/icons/quiz.svg',
-                          title: 'Activity',
                         ),
                         HomeCard(
                           onPress: () {

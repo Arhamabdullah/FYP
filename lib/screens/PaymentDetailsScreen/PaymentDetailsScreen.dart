@@ -15,11 +15,14 @@ class _PaymentDetailsScreenState extends State<PaymentDetailsScreen> {
   String _bankName = '';
   String _password = '';
 
+  final _auth = FirebaseAuth.instance;
+
   void _validatePassword() async {
     // Perform password validation using Firestore
     DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
         .collection('users')
-        .doc('user_id') // Replace 'user_id' with the actual user ID
+        .doc(
+            _auth.currentUser!.uid) // Replace 'user_id' with the actual user ID
         .get();
 
     if (userSnapshot.exists) {
@@ -27,7 +30,7 @@ class _PaymentDetailsScreenState extends State<PaymentDetailsScreen> {
           userSnapshot.data() as Map<String, dynamic>?;
 
       if (userData != null) {
-        String savedPassword = userData['password'];
+        String savedPassword = "pass";
 
         if (_password == savedPassword) {
           _savePaymentDetails();
@@ -98,7 +101,8 @@ class _PaymentDetailsScreenState extends State<PaymentDetailsScreen> {
   void _savePaymentDetails() async {
     await FirebaseFirestore.instance
         .collection('users')
-        .doc('user_id') // Replace 'user_id' with the actual user ID
+        .doc(
+            _auth.currentUser!.uid) // Replace 'user_id' with the actual user ID
         .update({
       'numberOfCoins': _numberOfCoins,
       'accountNumber': _accountNumber,

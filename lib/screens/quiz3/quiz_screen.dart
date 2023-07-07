@@ -2,20 +2,25 @@ import 'package:Edufy/screens/home_screen/home_screen.dart';
 import 'package:Edufy/screens/quiz3/question_model.dart';
 import 'package:Edufy/screens/quiz4/quiz_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class QuizScreen3 extends StatefulWidget {
-  const QuizScreen3({super.key});
-  static const String routeName = 'QuizScreen2';
+  const QuizScreen3({Key? key}) : super(key: key);
+  static const String routeName = 'QuizScreen3';
+
   @override
   State<QuizScreen3> createState() => _QuizScreenState();
 }
 
 class _QuizScreenState extends State<QuizScreen3> {
-  //define the datas
   List<Question3> questionList = getQuestions3();
   int currentQuestionIndex = 0;
   int score = 0;
   Answer3? selectedAnswer;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
   void nextQuiz() {
     Navigator.pushReplacementNamed(context, QuizScreen4.routeName);
     setState(() {
@@ -38,29 +43,31 @@ class _QuizScreenState extends State<QuizScreen3> {
             child: Icon(Icons.logout),
           )
         ],
-        title: Text('back to home'),
+        title: Text('Back to Home'),
       ),
       backgroundColor: const Color.fromARGB(255, 5, 50, 80),
       body: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-        child:
-            Column(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-          const Text(
-            "Simple Quiz App",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            const Text(
+              "Simple Quiz App",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+              ),
             ),
-          ),
-          _questionWidget(),
-          _answerList(),
-          _nextButton(),
-        ]),
+            _questionWidget(),
+            _answerList(),
+            _nextButton(),
+          ],
+        ),
       ),
     );
   }
 
-  _questionWidget() {
+  Widget _questionWidget() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
@@ -90,18 +97,16 @@ class _QuizScreenState extends State<QuizScreen3> {
               fontWeight: FontWeight.w600,
             ),
           ),
-        )
+        ),
       ],
     );
   }
 
-  _answerList() {
+  Widget _answerList() {
     return Column(
       children: questionList[currentQuestionIndex]
           .answersList
-          .map(
-            (e) => _answerButton(e),
-          )
+          .map((e) => _answerButton(e))
           .toList(),
     );
   }
@@ -134,11 +139,8 @@ class _QuizScreenState extends State<QuizScreen3> {
     );
   }
 
-  _nextButton() {
-    bool isLastQuestion = false;
-    if (currentQuestionIndex == questionList.length - 1) {
-      isLastQuestion = true;
-    }
+  Widget _nextButton() {
+    bool isLastQuestion = currentQuestionIndex == questionList.length - 1;
 
     return Container(
       width: MediaQuery.of(context).size.width * 0.5,
@@ -152,11 +154,8 @@ class _QuizScreenState extends State<QuizScreen3> {
         ),
         onPressed: () {
           if (isLastQuestion) {
-            //display score
-
             showDialog(context: context, builder: (_) => _showScoreDialog());
           } else {
-            //next question
             setState(() {
               selectedAnswer = null;
               currentQuestionIndex++;
@@ -167,24 +166,56 @@ class _QuizScreenState extends State<QuizScreen3> {
     );
   }
 
-  _showScoreDialog() {
-    bool isPassed = false;
+  Future<void> _saveQuizResult(double scorePercentage) async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final userId = user.uid;
+        final quizResultRef = _firestore.collection('quizResults').doc(userId);
+        await quizResultRef.set({'percentage': scorePercentage});
+      }
+    } catch (error) {
+      print('Error saving quiz result: $error');
+    }
+  }
 
-    if (score >= questionList.length * 0.6) {
-      //pass if 60 %
+  Future<void> _awardCoins() async {
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final userId = user.uid;
+        final userRef = _firestore.collection('users').doc(userId);
+        final userData = await userRef.get();
+        final currentCoins = userData.data()?['coins'] ?? 0;
+        final newCoins = currentCoins + 10;
+        await userRef.update({'coins': newCoins});
+      }
+    } catch (error) {
+      print('Error awarding coins: $error');
+    }
+  }
+
+  Widget _showScoreDialog() {
+    bool isPassed = false;
+    double scorePercentage = (score / questionList.length) * 100;
+
+    if (scorePercentage >= 60) {
       isPassed = true;
     }
-    String title = isPassed ? "Passed " : "Failed";
+    String title = isPassed ? "Passed" : "Failed";
 
     return AlertDialog(
       title: Text(
-        title + " | Score is $score",
+        '$title | Score: $scorePercentage%',
         style: TextStyle(color: isPassed ? Colors.green : Colors.redAccent),
       ),
       content: ElevatedButton(
-        child: const Text("next quiz"),
+        child: const Text("Home"),
         onPressed: () {
-          Navigator.pushReplacementNamed(context, QuizScreen3.routeName);
+          _saveQuizResult(scorePercentage);
+          _awardCoins();
+          Navigator.pushNamedAndRemoveUntil(
+              context, HomeScreen.routeName, (route) => false);
           setState(() {
             currentQuestionIndex = 0;
             score = 0;

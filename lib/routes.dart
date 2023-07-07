@@ -8,8 +8,8 @@ import 'package:Edufy/screens/quiz4/quiz_screen.dart';
 import 'package:Edufy/screens/quiz5/quiz_screen.dart';
 
 import '/screens/login_screen/login_screen.dart';
-import '/screens/notes/addNoteScreen.dart';
-import '/screens/notes/editNoteScreen.dart';
+// import '/screens/notes/addNoteScreen.dart';
+// import '/screens/notes/editNoteScreen.dart';
 import '/screens/notes/notes.dart';
 import '/screens/register_screen/register_screen.dart';
 import '/screens/splash_screen/splash_screen.dart';
@@ -38,8 +38,8 @@ Map<String, WidgetBuilder> routes = {
   QuizScreen4.routeName: (context) => QuizScreen4(),
   QuizScreen5.routeName: (context) => QuizScreen5(),
   NotesScreen.routeName: (context) => NotesScreen(),
-  AddNoteScreen.routeName: (context) => AddNoteScreen(),
-  EditNoteScreen.routeName: (context) => EditNoteScreen(),
+  // AddNoteScreen.routeName: (context) => AddNoteScreen(),
+  // EditNoteScreen.routeName: (context) => EditNoteScreen(),
   ForgotPasswordScreen.routeName: (context) => ForgotPasswordScreen(),
   PaymentDetailsScreen.routeName: (context) => PaymentDetailsScreen(),
   PaymentSuccessScreen.routeName: (context) => PaymentSuccessScreen(),

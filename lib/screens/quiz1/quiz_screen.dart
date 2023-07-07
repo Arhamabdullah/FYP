@@ -6,6 +6,9 @@ import 'package:Edufy/screens/quiz4/quiz_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:Edufy/screens/home_screen/globals.dart' as globals;
+import 'dart:async'; // necessary for Timer
+import 'package:flutter/foundation.dart';
 
 class QuizScreen1 extends StatefulWidget {
   const QuizScreen1({Key? key}) : super(key: key);
@@ -205,6 +208,30 @@ class _QuizScreenState extends State<QuizScreen1> {
       isPassed = true;
     }
     String title = isPassed ? "Passed" : "Failed";
+
+    //   globals.isDisabled.value = true;  // setting a new value
+    // globals.timer.value = 5;  // setting a new value
+
+    // // Set a Timer to make isDisabled false after 1 minute
+    // Timer(Duration(seconds: 5), () {
+    //   globals.isDisabled.value = false;
+    // });
+
+    // NEW CODE
+
+    globals.isDisabled.value = true; // setting a new value
+    globals.timer.value = 60; // setting a new value to 60 seconds (1 minute)
+    globals.quizDone.value = 1; // incrementing the value of quizDone by 1
+// Set a Timer to decrement the timer every second
+    Timer.periodic(Duration(seconds: 1), (Timer t) {
+      if (globals.timer.value > 0) {
+        globals.timer.value -= 1;
+      } else {
+        // When the timer reaches zero, make isDisabled false
+        globals.isDisabled.value = false;
+        t.cancel(); // Remember to cancel the Timer when you don't need it anymore
+      }
+    });
 
     return AlertDialog(
       title: Text(
